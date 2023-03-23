@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Dog\'s breed app</string>
+    <string name="search">Search breed</string>
+    <string name="allBreeds">All breeds</string>
+    <string name="randomImages">Random images</string>
+    <string name="favorite">"Favorite images "</string>
+    <string name="loading">Loading</string>
+    <string name="loading_failed">Failed to load</string>
+    <string name="allGood">I have got the result</string>
+    <string name="search_breed">Search breed</string>
+    <string name="noDogPhoto">There is no photo of this breed!</string>
+</resources>
