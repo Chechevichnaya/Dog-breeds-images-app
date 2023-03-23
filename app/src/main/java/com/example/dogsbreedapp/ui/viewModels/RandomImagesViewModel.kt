@@ -46,4 +46,17 @@ class RandomImagesViewModel : ViewModel() {
     private suspend fun getRandomImagesFromApi():List<DogImage>{
          return apiService.getRandomImages().toDogImages()
      }
+
+    fun updateFavoriteState(newState: Boolean, dogPhoto: DogImage) {
+        _screenState.update { state ->
+            val breedImages = state.images.map { image ->
+                if (image == dogPhoto) {
+                    image.copy(favorite = newState)
+                } else {
+                    image
+                }
+            }
+            state.copy(images = breedImages)
+        }
+    }
 }

@@ -36,13 +36,13 @@ fun RandomImagesScreen(
             )
         }
     ) { _ ->
-//        PhotosGridScreen(photos = screenState.images,
-//            onClickFavorite = { favoriteState, dogPhoto ->
-//                viewModelBreedImages.updateFavoriteState(
-//                    favoriteState,
-//                    dogPhoto
-//                )
-//            })
+        PhotosGridScreen(photos = screenState.images,
+            onClickFavorite = { favoriteState, dogPhoto ->
+                viewModelRandomImages.updateFavoriteState(
+                    favoriteState,
+                    dogPhoto
+                )
+            })
     }
 
 }
