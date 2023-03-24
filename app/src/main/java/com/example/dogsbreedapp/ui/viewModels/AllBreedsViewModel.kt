@@ -2,6 +2,7 @@ package com.example.dogsbreedapp.ui.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dogsbreedapp.data.Repository
 import com.example.dogsbreedapp.data.model.Breed
 import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.data.model.SearchWidgetState
@@ -27,7 +28,7 @@ sealed interface UiState {
 }
 
 
-class AllBreedsViewModel : ViewModel() {
+class AllBreedsViewModel(private val repo:Repository) : ViewModel() {
 
     private val _screenState = MutableStateFlow(AllBreedsScreenState())
     val screenState: StateFlow<AllBreedsScreenState> = _screenState.asStateFlow()

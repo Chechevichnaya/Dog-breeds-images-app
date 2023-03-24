@@ -12,8 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,7 +23,9 @@ import coil.request.ImageRequest
 import com.example.dogsbreedapp.R
 import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.ui.viewModels.BreedImagesViewModel
-import com.example.dogsbreedapp.ui.viewModels.BreedImagesViewModelFactory
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
+
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -33,23 +33,19 @@ fun BreedImagesScreen(
     modifier: Modifier = Modifier,
     navigateUp: () -> Unit,
     arg: String,
-    viewModelBreedImages: BreedImagesViewModel =
-        viewModel(factory = BreedImagesViewModelFactory(arg))
+    viewModelBreedImages: BreedImagesViewModel = koinViewModel  {
+        parametersOf(arg)
+    }
+
 ) {
     val screenState by viewModelBreedImages.screenState.collectAsState()
 
     Scaffold(
         topBar = {
-            TopBarApp(
+            TopBarAppWithImages(
                 screenTitle = arg,
-                canNavigateBack = true,
                 navigateUp = navigateUp,
-                searchWidgetState = screenState.searchWidgetState,
-                onTextChanges = {},
-                onCloseClicked = {},
-                onSearchClickedInOpenState = {},
-                onSearchClickedInCloseState = {},
-                searchWidgetVisibility = screenState.searchWidgetVisibility
+//                onSaveButtonClicked = { viewModelBreedImages.addFavoriteImagesToDB() }
             )
         }
     ) { _ ->
@@ -114,10 +110,6 @@ fun FavoriteButton(
 ) {
     Box(
         modifier = Modifier.padding(12.dp)
-//        modifier = Modifier
-//            .size(36.dp)
-//            .offset(8.dp, 8.dp)
-//            .graphicsLayer(alpha = 1f)
     )
     {
 

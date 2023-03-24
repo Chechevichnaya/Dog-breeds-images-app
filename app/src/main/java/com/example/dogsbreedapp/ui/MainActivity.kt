@@ -71,7 +71,7 @@ fun DogBreedApp(
                 RandomImagesScreen(navigateUp = { navController.navigateUp() })
             }
             composable(Tabs.FavoriteImages.title.toString()) {
-//                viewModel.updateScreen(Tabs.FavoriteImages)
+                FavoriteImagesScreen()
             }
         }
 

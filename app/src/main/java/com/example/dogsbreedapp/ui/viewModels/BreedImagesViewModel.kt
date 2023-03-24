@@ -1,8 +1,8 @@
 package com.example.dogsbreedapp.ui.viewModels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.dogsbreedapp.data.Repository
 import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.data.network.DogsBreedApi
 import com.example.dogsbreedapp.data.network.DogsBreedApiService
@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class BreedImagesViewModel(breedName: String) : ViewModel() {
+class BreedImagesViewModel(private val breedName: String, private val repo: Repository) :
+    ViewModel() {
 
     private val _screenState = MutableStateFlow(BreedImagesScreenState())
     val screenState: StateFlow<BreedImagesScreenState> = _screenState.asStateFlow()
@@ -73,11 +74,24 @@ class BreedImagesViewModel(breedName: String) : ViewModel() {
             }
             state.copy(breedImages = breedImages)
         }
+//        if (newState) {
+//            addFavoriteImageToDB(dogPhoto)
+//        } else {
+//            deleteFavoriteImageFromDB(dogPhoto)
+//        }
+    }
+
+//    private fun addFavoriteImageToDB
+
+    private fun addFavoriteImagesToDB() {
+        val favoriteImages = _screenState.value.breedImages
+            .filter { it.favorite }
+            .map { it.toFavoriteImagesForDB() }
+            .toSet()
+        viewModelScope.launch {
+            repo.insertFavoriteImages(favoriteImages)
+        }
+
     }
 }
 
-class BreedImagesViewModelFactory(private val breedName: String) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        BreedImagesViewModel(breedName) as T
-}

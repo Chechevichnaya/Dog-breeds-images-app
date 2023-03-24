@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.Flow
 interface FavoriteImagesDao {
 
     @Insert (onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(favoriteImage: List<FavoriteImageEntity>)
+    suspend fun insert(favoriteImage: Set<FavoriteImageEntity>)
 
     @Update
-    suspend fun update(favoriteImage: List<FavoriteImageEntity>)
+    suspend fun update(favoriteImage: Set<FavoriteImageEntity>)
 
     @Delete
-    suspend fun delete(favoriteImage: List<FavoriteImageEntity>)
+    suspend fun delete(favoriteImage: Set<FavoriteImageEntity>)
 
     @Query("SELECT * FROM favorite_images")
     fun getAllItems(): Flow<List<FavoriteImageEntity>>

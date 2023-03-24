@@ -103,6 +103,30 @@ fun DefaultedTopBar(
 
 }
 
+@Composable
+fun TopBarAppWithImages(
+    screenTitle: String,
+    navigateUp: () -> Unit,
+//    onSaveButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(screenTitle) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = navigateUp) {
+                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
+            }
+        },
+//        actions = {
+//            IconButton(onClick = onSaveButtonClicked) {
+//                Icon(painter = painterResource(id = R.drawable.save_icon), contentDescription = null )
+//            }
+//        }
+    )
+
+}
+
 @Preview
 @Composable
 fun PreviewTopBar() {

@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogsbreedapp.R
 import com.example.dogsbreedapp.ui.viewModels.RandomImagesViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -17,7 +18,7 @@ import com.example.dogsbreedapp.ui.viewModels.RandomImagesViewModel
 fun RandomImagesScreen(
     modifier: Modifier = Modifier,
     navigateUp: () -> Unit,
-    viewModelRandomImages: RandomImagesViewModel = viewModel()
+    viewModelRandomImages: RandomImagesViewModel = koinViewModel()
 ) {
     val screenState by viewModelRandomImages.screenState.collectAsState()
 

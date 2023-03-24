@@ -2,6 +2,7 @@ package com.example.dogsbreedapp.ui.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dogsbreedapp.data.Repository
 import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.data.network.DogsBreedApi
 import com.example.dogsbreedapp.data.network.DogsBreedApiService
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class RandomImagesViewModel : ViewModel() {
+class RandomImagesViewModel(val repo: Repository) : ViewModel() {
 
     private val apiService: DogsBreedApiService = DogsBreedApi.retrofitService
 

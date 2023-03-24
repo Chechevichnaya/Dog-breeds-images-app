@@ -22,13 +22,14 @@ import com.example.dogsbreedapp.ui.viewModels.AllBreedsViewModel
 import com.example.dogsbreedapp.ui.viewModels.UiState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogsbreedapp.data.model.SearchWidgetState
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AllBreedsScreen(
     modifier: Modifier = Modifier,
     onClickBreedButton: (String) -> Unit,
-    viewModel: AllBreedsViewModel = viewModel()
+    viewModel: AllBreedsViewModel = koinViewModel()
 ) {
     val allBreedsScreenState by viewModel.screenState.collectAsState()
     Scaffold(
