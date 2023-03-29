@@ -1,5 +1,6 @@
 package com.example.dogsbreedapp.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dogsbreedapp.data.Repository
@@ -37,5 +38,15 @@ class FavoriteImagesViewModel(private val repo: Repository) : ViewModel() {
 //            repo.getDogImageId(dogImage.toFavoriteImagesForDB())
             repo.deleteFavoriteImage(dogImage.toFavoriteImagesForDB().image_uri)
         }
+    }
+
+    fun getBreedOfDog(dogPhoto: DogImage): String {
+        val regex = Regex(".*/breeds/(.*?)/.*")
+        val matchResult = regex.find(dogPhoto.uri)
+        val breed = matchResult?.groupValues
+            ?.getOrNull(1)
+            ?.replace("-", " ")
+            ?.replaceFirstChar(Char::uppercase)
+        return breed?: ""
     }
 }

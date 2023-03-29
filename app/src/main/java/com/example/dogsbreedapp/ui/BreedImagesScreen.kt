@@ -1,6 +1,7 @@
 package com.example.dogsbreedapp.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -30,7 +31,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun BreedImagesScreen(
     modifier: Modifier = Modifier,
-    navigateUp: () -> Unit,
+//    navigateUp: () -> Unit,
     arg: String,
     viewModelBreedImages: BreedImagesViewModel = koinViewModel {
         parametersOf(arg)
@@ -43,8 +44,7 @@ fun BreedImagesScreen(
         topBar = {
             TopBarAppWithImages(
                 screenTitle = arg,
-                navigateUp = navigateUp,
-//                onSaveButtonClicked = { viewModelBreedImages.addFavoriteImagesToDB() }
+//                navigateUp = navigateUp,
             )
         }
     ) { _ ->
@@ -93,7 +93,7 @@ fun PhotosGridScreen(
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(4.dp)
     ) {
-        items(items = photos, key = { photo -> photo.id }) { photo ->
+        items(items = photos, key = { photo -> photo.uri }) { photo ->
             DogPhotoWithFavoriteButton(
                 photo = photo,
                 onClickFavorite = onClickFavorite
@@ -145,7 +145,7 @@ fun DogPhotoWithFavoriteButton(
             .aspectRatio(1f),
         elevation = 8.dp
     ) {
-        DogPhoto(photo)
+        DogPhoto(photo = photo, onImageClicked = {}, enabledClickOnImage = false)
         FavoriteButton(
             isFavorite = photo.favorite,
             onClickFavorite = {
@@ -158,14 +158,20 @@ fun DogPhotoWithFavoriteButton(
 }
 
 @Composable
-fun DogPhoto(photo: DogImage) {
+fun DogPhoto(
+    photo: DogImage,
+    onImageClicked: () -> Unit,
+    enabledClickOnImage: Boolean
+) {
     AsyncImage(
         model = ImageRequest.Builder(context = LocalContext.current)
-            .data(photo.id)
+            .data(photo.uri)
             .crossfade(true)
             .build(),
         contentDescription = null,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(enabled = enabledClickOnImage, onClick = onImageClicked)
     )
 }
 

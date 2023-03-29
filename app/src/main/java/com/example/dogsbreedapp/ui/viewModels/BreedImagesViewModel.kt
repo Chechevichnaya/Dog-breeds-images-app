@@ -36,7 +36,7 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
                 images = getAllKindsOfBreedImagesFromApi(formatBreedName(breedName))
                 if (breedName.contains(" ")) {
                     val currentKindOfBreed = breedName.replace(" ", "-").lowercase()
-                    images = images.filter { it.id.contains(currentKindOfBreed) }
+                    images = images.filter { it.uri.contains(currentKindOfBreed) }
                 }
                 UiState.Success
             } catch (e: IOException) {
@@ -62,7 +62,7 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
         favoriteImagesUris
             .combine(allBreedImageFlow) { favoriteImages, allImages ->
                 allImages.map { image ->
-                    image.copy(favorite = favoriteImages.contains(image.id))
+                    image.copy(favorite = favoriteImages.contains(image.uri))
                 }
             }
             .collect {

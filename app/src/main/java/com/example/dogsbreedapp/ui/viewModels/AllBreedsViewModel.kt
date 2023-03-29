@@ -46,11 +46,6 @@ class AllBreedsViewModel(private val repo:Repository) : ViewModel() {
 
     }
 
-    fun updateSearchWidgetVisibility(newValue: SearchWidgetVisibility) {
-        _screenState.update { state ->
-            state.copy(searchWidgetVisibility = newValue)
-        }
-    }
 
     fun updateSearchTextState(newText: String) {
         _screenState.update { state ->

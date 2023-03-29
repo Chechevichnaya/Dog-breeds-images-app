@@ -7,10 +7,9 @@ import androidx.room.PrimaryKey
 data class FavoriteImageEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val image_uri: String,
-    val breed: String
+    val image_uri: String
 ) {
     fun toDogImage(): DogImage {
-        return DogImage(id = this.image_uri, favorite = true)
+        return DogImage(uri = this.image_uri, favorite = true)
     }
 }

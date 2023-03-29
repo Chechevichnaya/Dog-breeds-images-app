@@ -1,6 +1,7 @@
 package com.example.dogsbreedapp.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,7 +27,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun FavoriteImagesScreen(
     modifier: Modifier = Modifier,
-    navigateUp: () -> Unit,
+    onImageClicked: (String) -> Unit,
     viewModelFavorite: FavoriteImagesViewModel = koinViewModel()
 ) {
     val screenState by viewModelFavorite.screenState.collectAsState()
@@ -34,16 +35,16 @@ fun FavoriteImagesScreen(
     Scaffold(
         topBar = {
             TopBarAppWithImages(
-                screenTitle = stringResource(id = R.string.favorite),
-                navigateUp = navigateUp
-            )
+                screenTitle = stringResource(id = R.string.favorite))
         }) { _ ->
         if (screenState.favoriteImages.isEmpty()) {
             NoPhoto(text = stringResource(R.string.no_favorite_photos))
         }
+
         PhotosGridScreenFavoriteImages(
             photos = screenState.favoriteImages,
-            onClickDeleteButton = { image -> viewModelFavorite.deleteImageFromDB(image) }
+            onClickDeleteButton = { image -> viewModelFavorite.deleteImageFromDB(image) },
+            onImageClicked = { onImageClicked(viewModelFavorite.getBreedOfDog(it)) }
         )
     }
 }
@@ -52,17 +53,19 @@ fun FavoriteImagesScreen(
 private fun PhotosGridScreenFavoriteImages(
     modifier: Modifier = Modifier,
     photos: List<DogImage>,
-    onClickDeleteButton: (DogImage) -> Unit
+    onClickDeleteButton: (DogImage) -> Unit,
+    onImageClicked: (DogImage) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(150.dp),
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(4.dp)
     ) {
-        items(items = photos, key = { photo -> photo.id }) { photo ->
+        items(items = photos, key = { photo -> photo.uri }) { photo ->
             DogPhotoWithDeleteButton(
                 dogPhoto = photo,
-                onClickedToDelete = { onClickDeleteButton(photo) })
+                onClickedToDelete = { onClickDeleteButton(photo) },
+                onImageClicked = { onImageClicked(photo) })
         }
     }
 
@@ -72,7 +75,8 @@ private fun PhotosGridScreenFavoriteImages(
 fun DogPhotoWithDeleteButton(
     modifier: Modifier = Modifier,
     dogPhoto: DogImage,
-    onClickedToDelete: () -> Unit
+    onClickedToDelete: () -> Unit,
+    onImageClicked: () -> Unit
 ) {
     Card(
         modifier = modifier
@@ -82,7 +86,7 @@ fun DogPhotoWithDeleteButton(
         elevation = 8.dp
     )
     {
-        DogPhoto(photo = dogPhoto)
+        DogPhoto(photo = dogPhoto, onImageClicked = onImageClicked, enabledClickOnImage = true)
         DeleteButton(onClickDeleteButton = onClickedToDelete)
     }
 }

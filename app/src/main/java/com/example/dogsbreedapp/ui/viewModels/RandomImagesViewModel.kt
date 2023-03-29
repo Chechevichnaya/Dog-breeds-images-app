@@ -19,7 +19,9 @@ class RandomImagesViewModel(val repo: Repository) : ViewModel() {
     private val _screenState = MutableStateFlow(RandomImagesScreenState())
     val screenState: StateFlow<RandomImagesScreenState> = _screenState.asStateFlow()
 
-
+init {
+    getRandomImages()
+}
 
 
     fun getRandomImages() {

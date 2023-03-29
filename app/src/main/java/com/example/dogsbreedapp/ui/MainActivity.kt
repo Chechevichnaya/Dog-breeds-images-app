@@ -1,6 +1,6 @@
 package com.example.dogsbreedapp.ui
 
-//import com.example.dogsbreedapp.ui.model.Screens
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,8 +36,6 @@ fun DogBreedApp(
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute =
-        navBackStackEntry?.destination?.route ?: Tabs.AllBreeds.title.toString()
     val currentDestination = navBackStackEntry?.destination
 
     Scaffold(
@@ -64,18 +62,20 @@ fun DogBreedApp(
             composable(BreedsImages().title + ("/{chosenBreed}")) { backStackEntry ->
                 val arg = backStackEntry.arguments?.getString("chosenBreed") ?: ""
                 BreedImagesScreen(
-                    arg = arg,
-                    navigateUp = { navController.navigateUp() })
+                    arg = arg
+                )
             }
             composable(Tabs.RandomImages.title.toString()) {
-                RandomImagesScreen(navigateUp = { navController.navigateUp() })
+                RandomImagesScreen()
             }
             composable(Tabs.FavoriteImages.title.toString()) {
-                FavoriteImagesScreen(navigateUp = { navController.navigateUp() })
+                FavoriteImagesScreen(
+                    onImageClicked = {
+                        navController.navigate(
+                            BreedsImages().title + ("/$it"))
+                    })
             }
         }
-
-
     }
 }
 

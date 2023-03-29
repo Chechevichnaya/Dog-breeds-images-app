@@ -17,7 +17,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun RandomImagesScreen(
     modifier: Modifier = Modifier,
-    navigateUp: () -> Unit,
     viewModelRandomImages: RandomImagesViewModel = koinViewModel()
 ) {
     val screenState by viewModelRandomImages.screenState.collectAsState()
@@ -27,7 +26,6 @@ fun RandomImagesScreen(
             TopBarApp(
                 screenTitle = stringResource(id = R.string.randomImages),
                 canNavigateBack = true,
-                navigateUp = navigateUp,
                 searchWidgetState = screenState.searchWidgetState,
                 onTextChanges = {},
                 onCloseClicked = {},
@@ -37,7 +35,6 @@ fun RandomImagesScreen(
             )
         }
     ) { _ ->
-
         PhotosGridScreen(photos = screenState.images,
             onClickFavorite = { favoriteState, dogPhoto ->
                 viewModelRandomImages.updateFavoriteState(
@@ -46,6 +43,5 @@ fun RandomImagesScreen(
                 )
             })
     }
-
 }
 

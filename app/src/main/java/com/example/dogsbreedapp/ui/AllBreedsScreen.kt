@@ -37,7 +37,6 @@ fun AllBreedsScreen(
             TopBarApp(
                 screenTitle = stringResource(id = R.string.allBreeds),
                 canNavigateBack = false,
-                navigateUp = { },
                 searchWidgetState = allBreedsScreenState.searchWidgetState,
                 searchTextState = allBreedsScreenState.searchTextState,
                 onTextChanges = {
