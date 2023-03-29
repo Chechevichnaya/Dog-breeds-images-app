@@ -9,4 +9,5 @@
     <string name="allGood">I have got the result</string>
     <string name="search_breed">Search breed</string>
     <string name="noDogPhoto">There is no photo of this breed!</string>
+    <string name="no_favorite_photos">No favorite dog photos has been selected</string>
 </resources>

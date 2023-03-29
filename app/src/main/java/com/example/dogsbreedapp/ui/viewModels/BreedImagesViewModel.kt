@@ -7,10 +7,7 @@ import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.data.network.DogsBreedApi
 import com.example.dogsbreedapp.data.network.DogsBreedApiService
 import com.example.dogsbreedapp.ui.model.BreedImagesScreenState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -24,22 +21,22 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
     private val apiService: DogsBreedApiService = DogsBreedApi.retrofitService
 
     init {
-        getCurrentBreedImages(breedName)
+        getCurrentBreedImages()
     }
 
 
-    private suspend fun getBreedImages(breedName: String): List<DogImage> {
+    private suspend fun getAllKindsOfBreedImagesFromApi(breedName: String): List<DogImage> {
         return apiService.getCurrentBreedImages(breedName).toDogImages()
     }
 
-    private fun getCurrentBreedImages(breedName: String) {
+    private fun getCurrentBreedImages() {
         var images = listOf<DogImage>()
         viewModelScope.launch {
             val uiState = try {
-                images = getBreedImages(formatBreedName(breedName))
+                images = getAllKindsOfBreedImagesFromApi(formatBreedName(breedName))
                 if (breedName.contains(" ")) {
-                    val breedNameInStringImage = breedName.replace(" ", "-").lowercase()
-                    images = images.filter { it.id.contains(breedNameInStringImage) }
+                    val currentKindOfBreed = breedName.replace(" ", "-").lowercase()
+                    images = images.filter { it.id.contains(currentKindOfBreed) }
                 }
                 UiState.Success
             } catch (e: IOException) {
@@ -47,10 +44,26 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
             } catch (e: HttpException) {
                 UiState.Error
             }
-            _screenState.update { state ->
-                state.copy(breedImages = images)
-            }
 
+            val allBreedimageFlow = flowOf(images)
+
+            val favoriteImagesFlow =
+                repo.getAllFavoriteImagesFromDB()
+                    .map { list ->
+                        list.map { image -> image.toDogImage() }
+                    }
+
+            favoriteImagesFlow
+                .combine(allBreedimageFlow) { favoriteImages, allImages ->
+                    allImages.map { image ->
+                        image.copy(favorite = favoriteImages.contains(image))
+                    }
+                }
+                .collect {
+                    _screenState.update { state ->
+                        state.copy(breedImages = it)
+                    }
+                }
         }
     }
 
@@ -59,39 +72,38 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
         return breedName.replaceAfter(" ", "").trim().lowercase()
     }
 
-    private fun String.formatForApiService(): String {
-        return this.replace(" ", "-").lowercase()
+
+    private fun addImageToDB(dogPhoto: DogImage) {
+        viewModelScope.launch {
+            repo.insertFavoriteImage(dogPhoto.toFavoriteImagesForDB())
+        }
     }
 
-    fun updateFavoriteState(newState: Boolean, dogPhoto: DogImage) {
+    private fun deleteImageFromDB(dogPhoto: DogImage) {
+        viewModelScope.launch {
+            repo.deleteFavoriteImage(dogPhoto.toFavoriteImagesForDB())
+        }
+    }
+
+    fun updateDB(imageIsFavorite: Boolean, dogPhoto: DogImage) {
+
+        if (imageIsFavorite) {
+            addImageToDB(dogPhoto)
+        } else {
+            deleteImageFromDB(dogPhoto)
+        }
+    }
+
+    fun changeDogFavoriteStatus(favoriteState: Boolean, dogPhoto: DogImage) {
         _screenState.update { state ->
-            val breedImages = state.breedImages.map { image ->
+            state.copy(breedImages = state.breedImages.map { image ->
                 if (image == dogPhoto) {
-                    image.copy(favorite = newState)
+                    image.copy(favorite = favoriteState)
                 } else {
                     image
                 }
-            }
-            state.copy(breedImages = breedImages)
+            })
         }
-//        if (newState) {
-//            addFavoriteImageToDB(dogPhoto)
-//        } else {
-//            deleteFavoriteImageFromDB(dogPhoto)
-//        }
-    }
-
-//    private fun addFavoriteImageToDB
-
-    private fun addFavoriteImagesToDB() {
-        val favoriteImages = _screenState.value.breedImages
-            .filter { it.favorite }
-            .map { it.toFavoriteImagesForDB() }
-            .toSet()
-        viewModelScope.launch {
-            repo.insertFavoriteImages(favoriteImages)
-        }
-
     }
 }
 

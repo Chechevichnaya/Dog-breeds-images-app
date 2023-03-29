@@ -1,5 +1,6 @@
 package com.example.dogsbreedapp.data
 
+import android.util.Log
 import androidx.room.*
 import com.example.dogsbreedapp.data.model.FavoriteImageEntity
 import kotlinx.coroutines.flow.Flow
@@ -8,13 +9,11 @@ import kotlinx.coroutines.flow.Flow
 interface FavoriteImagesDao {
 
     @Insert (onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(favoriteImage: Set<FavoriteImageEntity>)
+    suspend fun insert(favoriteImage: FavoriteImageEntity)
 
-    @Update
-    suspend fun update(favoriteImage: Set<FavoriteImageEntity>)
 
     @Delete
-    suspend fun delete(favoriteImage: Set<FavoriteImageEntity>)
+    suspend fun delete(favoriteImage: FavoriteImageEntity)
 
     @Query("SELECT * FROM favorite_images")
     fun getAllItems(): Flow<List<FavoriteImageEntity>>

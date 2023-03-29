@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.dogsbreedapp.R
@@ -33,7 +32,7 @@ fun BreedImagesScreen(
     modifier: Modifier = Modifier,
     navigateUp: () -> Unit,
     arg: String,
-    viewModelBreedImages: BreedImagesViewModel = koinViewModel  {
+    viewModelBreedImages: BreedImagesViewModel = koinViewModel {
         parametersOf(arg)
     }
 
@@ -50,12 +49,13 @@ fun BreedImagesScreen(
         }
     ) { _ ->
         if (screenState.breedImages.isEmpty()) {
-            NoPhoto()
+            NoPhoto(text = stringResource(id = R.string.noDogPhoto))
         } else {
             PhotosGridScreen(
                 photos = screenState.breedImages,
                 onClickFavorite = { favoriteState, dogPhoto ->
-                    viewModelBreedImages.updateFavoriteState(
+                    viewModelBreedImages.changeDogFavoriteStatus(favoriteState, dogPhoto)
+                    viewModelBreedImages.updateDB(
                         favoriteState,
                         dogPhoto
                     )
@@ -68,13 +68,13 @@ fun BreedImagesScreen(
 }
 
 @Composable
-fun NoPhoto(modifier: Modifier = Modifier) {
+fun NoPhoto(text: String, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            text = stringResource(R.string.noDogPhoto),
+            text = text,
             textAlign = TextAlign.Center,
         )
     }
@@ -94,7 +94,7 @@ fun PhotosGridScreen(
         contentPadding = PaddingValues(4.dp)
     ) {
         items(items = photos, key = { photo -> photo.id }) { photo ->
-            DogPhoto(
+            DogPhotoWithFavoriteButton(
                 photo = photo,
                 onClickFavorite = onClickFavorite
             )
@@ -112,7 +112,6 @@ fun FavoriteButton(
         modifier = Modifier.padding(12.dp)
     )
     {
-
         IconToggleButton(
             checked = isFavorite,
             onCheckedChange = { onClickFavorite(it) },
@@ -134,7 +133,7 @@ fun FavoriteButton(
 }
 
 @Composable
-fun DogPhoto(
+fun DogPhotoWithFavoriteButton(
     photo: DogImage,
     modifier: Modifier = Modifier,
     onClickFavorite: (Boolean, DogImage) -> Unit
@@ -145,16 +144,8 @@ fun DogPhoto(
             .fillMaxWidth()
             .aspectRatio(1f),
         elevation = 8.dp
-    )
-    {
-        AsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(photo.id)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize()
-        )
+    ) {
+        DogPhoto(photo)
         FavoriteButton(
             isFavorite = photo.favorite,
             onClickFavorite = {
@@ -164,6 +155,18 @@ fun DogPhoto(
     }
 
 
+}
+
+@Composable
+fun DogPhoto(photo: DogImage) {
+    AsyncImage(
+        model = ImageRequest.Builder(context = LocalContext.current)
+            .data(photo.id)
+            .crossfade(true)
+            .build(),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 
