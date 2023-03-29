@@ -6,12 +6,8 @@ import com.example.dogsbreedapp.data.Repository
 import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.data.network.DogsBreedApi
 import com.example.dogsbreedapp.data.network.DogsBreedApiService
-import com.example.dogsbreedapp.ui.model.BreedImagesScreenState
 import com.example.dogsbreedapp.ui.model.RandomImagesScreenState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -23,11 +19,10 @@ class RandomImagesViewModel(val repo: Repository) : ViewModel() {
     private val _screenState = MutableStateFlow(RandomImagesScreenState())
     val screenState: StateFlow<RandomImagesScreenState> = _screenState.asStateFlow()
 
-    init {
-        getRandomImages()
-    }
 
-    private fun getRandomImages() {
+
+
+    fun getRandomImages() {
         var images = listOf<DogImage>()
         viewModelScope.launch {
             val uiState = try {
@@ -38,10 +33,32 @@ class RandomImagesViewModel(val repo: Repository) : ViewModel() {
             } catch (e: HttpException) {
                 UiState.Error
             }
-            _screenState.update { state ->
-                state.copy(images = images)
-            }
+
+            updateFavoriteStatusInLIstWithDogImages(images)
+
         }
+    }
+
+    private suspend fun updateFavoriteStatusInLIstWithDogImages(images: List<DogImage>) {
+        val allBreedImageFlow = flowOf(images)
+
+        val favoriteImagesFlow =
+            repo.getAllFavoriteImagesFromDB()
+                .map { list ->
+                    list.map { image -> image.toDogImage() }
+                }
+
+        favoriteImagesFlow
+            .combine(allBreedImageFlow) { favoriteImages, allImages ->
+                allImages.map { image ->
+                    image.copy(favorite = favoriteImages.contains(image))
+                }
+            }
+            .collect {
+                _screenState.update { state ->
+                    state.copy(images =  it)
+                }
+            }
     }
 
     private suspend fun getRandomImagesFromApi():List<DogImage>{

@@ -37,6 +37,7 @@ fun RandomImagesScreen(
             )
         }
     ) { _ ->
+
         PhotosGridScreen(photos = screenState.images,
             onClickFavorite = { favoriteState, dogPhoto ->
                 viewModelRandomImages.updateFavoriteState(

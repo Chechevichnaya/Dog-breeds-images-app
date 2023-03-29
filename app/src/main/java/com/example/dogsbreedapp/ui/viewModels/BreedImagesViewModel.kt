@@ -45,26 +45,31 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
                 UiState.Error
             }
 
-            val allBreedimageFlow = flowOf(images)
-
-            val favoriteImagesFlow =
-                repo.getAllFavoriteImagesFromDB()
-                    .map { list ->
-                        list.map { image -> image.toDogImage() }
-                    }
-
-            favoriteImagesFlow
-                .combine(allBreedimageFlow) { favoriteImages, allImages ->
-                    allImages.map { image ->
-                        image.copy(favorite = favoriteImages.contains(image))
-                    }
-                }
-                .collect {
-                    _screenState.update { state ->
-                        state.copy(breedImages = it)
-                    }
-                }
+            updateFavoriteStatusInLIstWithDogImages(images)
         }
+    }
+
+    private suspend fun updateFavoriteStatusInLIstWithDogImages(images: List<DogImage>) {
+        val allBreedImageFlow = flowOf(images)
+
+        val favoriteImagesUris =
+            repo.getAllFavoriteImagesFromDB()
+                .map { list ->
+                    list.map { image -> image.image_uri }
+                }
+
+
+        favoriteImagesUris
+            .combine(allBreedImageFlow) { favoriteImages, allImages ->
+                allImages.map { image ->
+                    image.copy(favorite = favoriteImages.contains(image.id))
+                }
+            }
+            .collect {
+                _screenState.update { state ->
+                    state.copy(breedImages = it)
+                }
+            }
     }
 
 
@@ -81,12 +86,11 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
 
     private fun deleteImageFromDB(dogPhoto: DogImage) {
         viewModelScope.launch {
-            repo.deleteFavoriteImage(dogPhoto.toFavoriteImagesForDB())
+            repo.deleteFavoriteImage(dogPhoto.toFavoriteImagesForDB().image_uri)
         }
     }
 
     fun updateDB(imageIsFavorite: Boolean, dogPhoto: DogImage) {
-
         if (imageIsFavorite) {
             addImageToDB(dogPhoto)
         } else {
