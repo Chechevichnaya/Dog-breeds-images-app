@@ -20,7 +20,6 @@ import com.example.dogsbreedapp.R
 import com.example.dogsbreedapp.data.model.Breed
 import com.example.dogsbreedapp.ui.viewModels.AllBreedsViewModel
 import com.example.dogsbreedapp.ui.viewModels.UiState
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogsbreedapp.data.model.SearchWidgetState
 import org.koin.androidx.compose.koinViewModel
 
@@ -34,7 +33,7 @@ fun AllBreedsScreen(
     val allBreedsScreenState by viewModel.screenState.collectAsState()
     Scaffold(
         topBar = {
-            TopBarApp(
+            TopBarForListOfDogsBreed(
                 screenTitle = stringResource(id = R.string.allBreeds),
                 canNavigateBack = false,
                 searchWidgetState = allBreedsScreenState.searchWidgetState,

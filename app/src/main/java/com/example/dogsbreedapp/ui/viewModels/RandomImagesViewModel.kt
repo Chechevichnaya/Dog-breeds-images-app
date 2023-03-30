@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class RandomImagesViewModel(val repo: Repository) : ViewModel() {
+class RandomImagesViewModel(private val repo: Repository) : ViewModel() {
 
     private val apiService: DogsBreedApiService = DogsBreedApi.retrofitService
 
@@ -24,7 +24,8 @@ init {
 }
 
 
-    fun getRandomImages() {
+
+    private fun getRandomImages() {
         var images = listOf<DogImage>()
         viewModelScope.launch {
             val uiState = try {

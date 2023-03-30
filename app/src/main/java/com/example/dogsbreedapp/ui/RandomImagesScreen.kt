@@ -20,18 +20,10 @@ fun RandomImagesScreen(
     viewModelRandomImages: RandomImagesViewModel = koinViewModel()
 ) {
     val screenState by viewModelRandomImages.screenState.collectAsState()
-
     Scaffold(
         topBar = {
-            TopBarApp(
+            TopBarAppWithImages(
                 screenTitle = stringResource(id = R.string.randomImages),
-                canNavigateBack = true,
-                searchWidgetState = screenState.searchWidgetState,
-                onTextChanges = {},
-                onCloseClicked = {},
-                onSearchClickedInOpenState = {},
-                onSearchClickedInCloseState = {},
-                searchWidgetVisibility = screenState.searchWidgetVisibility
             )
         }
     ) { _ ->

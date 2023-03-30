@@ -57,7 +57,9 @@ fun DogBreedApp(
                         navController.navigate(
                             BreedsImages().title + ("/$it")
                         )
-                    })
+                        navController
+                    }
+                )
             }
             composable(BreedsImages().title + ("/{chosenBreed}")) { backStackEntry ->
                 val arg = backStackEntry.arguments?.getString("chosenBreed") ?: ""

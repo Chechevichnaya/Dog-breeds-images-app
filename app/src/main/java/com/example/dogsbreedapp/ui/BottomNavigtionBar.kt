@@ -1,5 +1,6 @@
 package com.example.dogsbreedapp.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -12,10 +13,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.rememberNavController
 
 import com.example.dogsbreedapp.ui.model.getListOfScreens
@@ -26,7 +29,6 @@ import com.example.dogsbreedapp.ui.theme.DogsBreedAppTheme
 fun BottomNavigationMenuApp(
     currentDestination: NavDestination?,
     navController: NavHostController,
-//    onClickTab:() -> Unit,
     modifier: Modifier = Modifier
 ) {
     BottomNavigation {
@@ -45,30 +47,27 @@ fun BottomNavigationMenuApp(
                 selected = currentDestination?.hierarchy?.any { it.route == screen.title.toString() } == true,
                 onClick = {
                     navController.navigate(screen.title.toString()) {
-                        navController.graph.startDestinationRoute?.let { screen_route->
-                            popUpTo(screen_route) {
-                                saveState = true
-                            }
-                        }
-                        launchSingleTop = true
-                        restoreState = true
+                        popUpToTop(navController)
+//                        navController.graph.startDestinationRoute?.let { screen_route->
+//                            popUpTo(screen_route) {
+//                                inclusive = true
+//                                saveState = true
+//                            }
+//                        }
+//                        launchSingleTop = true
+//                        restoreState = true
                     }
                 }
             )
         }
     }
 }
-// onClick = {
-//                    navController.navigate(item.screen_route) {
-//
-//                        navController.graph.startDestinationRoute?.let { screen_route ->
-//                            popUpTo(screen_route) {
-//                                saveState = true
-//                            }
-//                        }
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
+
+fun NavOptionsBuilder.popUpToTop(navController: NavController) {
+    popUpTo(navController.currentBackStackEntry?.destination?.route ?: return) {
+        inclusive =  true
+    }
+}
 
 @Preview
 @Composable
