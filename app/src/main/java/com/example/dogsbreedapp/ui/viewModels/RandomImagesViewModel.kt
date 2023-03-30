@@ -26,10 +26,10 @@ init {
 
 
     private fun getRandomImages() {
-        var images = listOf<DogImage>()
+        var images = setOf<DogImage>()
         viewModelScope.launch {
             val uiState = try {
-                images = getRandomImagesFromApi()
+                images = getRandomImagesFromApi().toSet()
                 UiState.Success
             } catch (e: IOException) {
                 UiState.Error
@@ -42,7 +42,7 @@ init {
         }
     }
 
-    private suspend fun updateFavoriteStatusInLIstWithDogImages(images: List<DogImage>) {
+    private suspend fun updateFavoriteStatusInLIstWithDogImages(images: Set<DogImage>) {
         val allBreedImageFlow = flowOf(images)
 
         val favoriteImagesFlow =
