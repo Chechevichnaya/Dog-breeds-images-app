@@ -23,7 +23,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.dogsbreedapp.R
 import com.example.dogsbreedapp.data.model.DogImage
+import com.example.dogsbreedapp.ui.model.BreedImagesScreenState
 import com.example.dogsbreedapp.ui.viewModels.BreedImagesViewModel
+import com.example.dogsbreedapp.ui.viewModels.UiState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -32,7 +34,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun BreedImagesScreen(
     modifier: Modifier = Modifier,
-//    navigateUp: () -> Unit,
     arg: String,
     viewModelBreedImages: BreedImagesViewModel = koinViewModel {
         parametersOf(arg)
@@ -47,24 +48,37 @@ fun BreedImagesScreen(
                 screenTitle = arg,
             )
         }
-    ) { _ ->
-        if (screenState.breedImages.isEmpty()) {
-            NoPhoto(text = stringResource(id = R.string.noDogPhoto))
-        } else {
-            PhotosGridScreen(
-                photos = screenState.breedImages,
-                onClickFavorite = { favoriteState, dogPhoto ->
-                    viewModelBreedImages.changeDogFavoriteStatus(favoriteState, dogPhoto)
-                    viewModelBreedImages.updateDB(
-                        favoriteState,
-                        dogPhoto
-                    )
-                }
+    ) {
+        when (screenState.loadingStatus) {
+            is UiState.Loading -> LoadingScreen(modifier = modifier)
+            is UiState.Success -> ResultScreen(
+                screenState = screenState,
+                viewModelBreedImages = viewModelBreedImages
             )
+            is UiState.Error -> ErrorScreen(modifier = modifier)
         }
-
     }
+}
 
+@Composable
+private fun ResultScreen(
+    screenState: BreedImagesScreenState,
+    viewModelBreedImages: BreedImagesViewModel
+) {
+    if (screenState.breedImages.isEmpty()) {
+        NoPhoto(text = stringResource(id = R.string.noDogPhoto))
+    } else {
+        PhotosGridScreen(
+            photos = screenState.breedImages,
+            onClickFavorite = { favoriteState, dogPhoto ->
+                viewModelBreedImages.changeDogFavoriteStatus(favoriteState, dogPhoto)
+                viewModelBreedImages.updateDB(
+                    favoriteState,
+                    dogPhoto
+                )
+            }
+        )
+    }
 }
 
 @Composable
@@ -78,7 +92,6 @@ fun NoPhoto(text: String, modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center,
         )
     }
-
 }
 
 
@@ -122,7 +135,7 @@ fun FavoriteButton(
         {
             Icon(
                 painter = if (isFavorite) {
-                    painterResource(id = R.drawable.heart__1_)
+                    painterResource(id = R.drawable.full_heart)
                 } else {
                     painterResource(id = R.drawable.empty_heart)
                 },
@@ -153,8 +166,6 @@ fun DogPhotoWithFavoriteButton(
             }
         )
     }
-
-
 }
 
 @Composable
@@ -168,7 +179,7 @@ fun DogPhoto(
             .data(photo.uri)
             .crossfade(true)
             .build(),
-    contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop,
         contentDescription = null,
         modifier = Modifier
             .fillMaxSize()

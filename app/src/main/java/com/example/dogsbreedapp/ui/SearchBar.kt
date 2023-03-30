@@ -3,8 +3,6 @@ package com.example.dogsbreedapp.ui
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -15,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dogsbreedapp.R
@@ -25,8 +22,7 @@ import com.example.dogsbreedapp.ui.theme.DogsBreedAppTheme
 fun SearchAppBar(
     text: String,
     onTextChange: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit,
+    onCloseClicked: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -80,14 +76,6 @@ fun SearchAppBar(
                     )
                 }
             },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchClicked(text)
-                }
-            ),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
@@ -99,11 +87,10 @@ fun SearchAppBar(
 @Preview
 @Composable
 fun PreviewSearchBar() {
-    DogsBreedAppTheme() {
+    DogsBreedAppTheme {
         SearchAppBar(
             text = "",
             onTextChange = {},
-            onCloseClicked = { /*TODO*/ },
-            onSearchClicked = {})
+            onCloseClicked = { /*TODO*/ })
     }
 }

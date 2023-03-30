@@ -23,8 +23,6 @@ init {
     getRandomImages()
 }
 
-
-
     private fun getRandomImages() {
         var images = setOf<DogImage>()
         viewModelScope.launch {
@@ -37,12 +35,15 @@ init {
                 UiState.Error
             }
 
-            updateFavoriteStatusInLIstWithDogImages(images)
+            updateFavoriteStatusInListWithDogImages(images, uiState)
 
         }
     }
 
-    private suspend fun updateFavoriteStatusInLIstWithDogImages(images: Set<DogImage>) {
+    private suspend fun updateFavoriteStatusInListWithDogImages(
+        images: Set<DogImage>,
+        uiState: UiState
+    ) {
         val allBreedImageFlow = flowOf(images)
 
         val favoriteImagesFlow =
@@ -59,7 +60,7 @@ init {
             }
             .collect {
                 _screenState.update { state ->
-                    state.copy(images =  it)
+                    state.copy(images =  it, loadingStatus = uiState)
                 }
             }
     }

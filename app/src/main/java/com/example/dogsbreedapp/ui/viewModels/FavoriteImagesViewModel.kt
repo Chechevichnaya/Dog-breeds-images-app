@@ -8,6 +8,8 @@ import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.ui.model.FavoriteImagesScreenState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class FavoriteImagesViewModel(private val repo: Repository) : ViewModel() {
 
@@ -20,22 +22,33 @@ class FavoriteImagesViewModel(private val repo: Repository) : ViewModel() {
     }
 
     private fun showFavoritePhotos() {
+        var flowListDogImages = emptyFlow<List<DogImage>>()
+
         viewModelScope.launch {
-            repo.getAllFavoriteImagesFromDB()
-                .map { list ->
-                    list.map { image -> image.toDogImage() }
+            viewModelScope.launch {
+                val uiState = try {
+                    flowListDogImages = repo.getAllFavoriteImagesFromDB()
+                        .map { list ->
+                            list.map { image -> image.toDogImage() }
+                        }
+                    UiState.Success
+                } catch (e: IOException) {
+                    UiState.Error
+                } catch (e: HttpException) {
+                    UiState.Error
                 }
-                .collect {
+
+                flowListDogImages.collect {
                     _screenState.update { state ->
-                        state.copy(favoriteImages = it)
+                        state.copy(favoriteImages = it, loadingStatus = uiState)
                     }
                 }
+            }
         }
     }
 
     fun deleteImageFromDB(dogImage: DogImage) {
         viewModelScope.launch {
-//            repo.getDogImageId(dogImage.toFavoriteImagesForDB())
             repo.deleteFavoriteImage(dogImage.toFavoriteImagesForDB().image_uri)
         }
     }
@@ -47,6 +60,6 @@ class FavoriteImagesViewModel(private val repo: Repository) : ViewModel() {
             ?.getOrNull(1)
             ?.replace("-", " ")
             ?.replaceFirstChar(Char::uppercase)
-        return breed?: ""
+        return breed ?: ""
     }
 }

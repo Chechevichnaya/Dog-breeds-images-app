@@ -28,7 +28,6 @@ fun TopBarForListOfDogsBreed(
     searchTextState: String = "",
     onTextChanges: (String) -> Unit,
     onCloseClicked: () -> Unit,
-    onSearchClickedInOpenState: (String) -> Unit,
     onSearchClickedInCloseState: () -> Unit
 ) {
     when (searchWidgetState) {
@@ -45,7 +44,6 @@ fun TopBarForListOfDogsBreed(
                 text = searchTextState,
                 onTextChange = onTextChanges,
                 onCloseClicked = onCloseClicked,
-                onSearchClicked = onSearchClickedInOpenState
             )
         }
     }
@@ -101,7 +99,7 @@ fun TopBarAppWithImages(
 @Preview
 @Composable
 fun PreviewTopBar() {
-    DogsBreedAppTheme() {
+    DogsBreedAppTheme {
         TopBarForListOfDogsBreed(
             screenTitle = "Terrier Russel",
             canNavigateBack = false,
@@ -109,7 +107,6 @@ fun PreviewTopBar() {
             searchTextState = "",
             onTextChanges = {},
             onCloseClicked = { /*TODO*/ },
-            onSearchClickedInOpenState = {},
             searchWidgetVisibility = SearchWidgetVisibility.SHOW
         ) {}
     }

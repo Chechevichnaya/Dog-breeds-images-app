@@ -9,5 +9,5 @@ data class RandomImagesScreenState(
     val searchWidgetState: SearchWidgetState = SearchWidgetState.CLOSE,
     val searchWidgetVisibility: SearchWidgetVisibility = SearchWidgetVisibility.HIDE,
     val loadingStatus: UiState = UiState.Loading,
-    val images: List<DogImage> = listOf()
+    val images: List<DogImage> = listOf(),
 )

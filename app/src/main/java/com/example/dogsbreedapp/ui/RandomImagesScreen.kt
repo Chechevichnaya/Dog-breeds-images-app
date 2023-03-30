@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dogsbreedapp.R
+import com.example.dogsbreedapp.ui.model.RandomImagesScreenState
 import com.example.dogsbreedapp.ui.viewModels.RandomImagesViewModel
+import com.example.dogsbreedapp.ui.viewModels.UiState
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -26,14 +28,29 @@ fun RandomImagesScreen(
                 screenTitle = stringResource(id = R.string.randomImages),
             )
         }
-    ) { _ ->
-        PhotosGridScreen(photos = screenState.images,
-            onClickFavorite = { favoriteState, dogPhoto ->
-                viewModelRandomImages.updateFavoriteState(
-                    favoriteState,
-                    dogPhoto
-                )
-            })
+    ) {
+        when (screenState.loadingStatus) {
+            is UiState.Loading -> LoadingScreen(modifier)
+            is UiState.Success -> ResultScreen(
+                screenState = screenState,
+                viewModelRandomImages = viewModelRandomImages
+            )
+            is UiState.Error -> ErrorScreen(modifier)
+        }
     }
+}
+
+@Composable
+private fun ResultScreen(
+    screenState: RandomImagesScreenState,
+    viewModelRandomImages: RandomImagesViewModel
+) {
+    PhotosGridScreen(photos = screenState.images,
+        onClickFavorite = { favoriteState, dogPhoto ->
+            viewModelRandomImages.updateFavoriteState(
+                favoriteState,
+                dogPhoto
+            )
+        })
 }
 

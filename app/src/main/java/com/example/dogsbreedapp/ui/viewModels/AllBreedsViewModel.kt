@@ -4,13 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dogsbreedapp.data.Repository
 import com.example.dogsbreedapp.data.model.Breed
-import com.example.dogsbreedapp.data.model.DogImage
 import com.example.dogsbreedapp.data.model.SearchWidgetState
-import com.example.dogsbreedapp.data.model.SearchWidgetVisibility
 import com.example.dogsbreedapp.data.network.DogsBreedApi
 import com.example.dogsbreedapp.data.network.DogsBreedApiService
 import com.example.dogsbreedapp.ui.model.AllBreedsScreenState
-import com.example.dogsbreedapp.ui.model.Tabs
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,7 +58,7 @@ class AllBreedsViewModel(private val repo:Repository) : ViewModel() {
     private fun getAllBreeds() {
         var listOfBreeds = listOf<Breed>()
         viewModelScope.launch {
-            val uiStateNEW = try {
+            val uiState = try {
                 listOfBreeds = getAllBreedsNames()
                 UiState.Success
             } catch (e: IOException) {
@@ -71,7 +68,7 @@ class AllBreedsViewModel(private val repo:Repository) : ViewModel() {
             }
             _screenState.update { state ->
                 state.copy(
-                    loadingStatus = uiStateNEW,
+                    loadingStatus = uiState,
                     listOfBreeds = listOfBreeds,
                     originalLIstOfAllBreeds = listOfBreeds
                 )

@@ -31,6 +31,7 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
 
     private fun getCurrentBreedImages() {
         var images = listOf<DogImage>()
+
         viewModelScope.launch {
             val uiState = try {
                 images = getAllKindsOfBreedImagesFromApi(formatBreedName(breedName))
@@ -45,11 +46,14 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
                 UiState.Error
             }
 
-            updateFavoriteStatusInLIstWithDogImages(images)
+            updateFavoriteStatusInListWithDogImages(images, uiState,)
         }
     }
 
-    private suspend fun updateFavoriteStatusInLIstWithDogImages(images: List<DogImage>) {
+    private suspend fun updateFavoriteStatusInListWithDogImages(
+        images: List<DogImage>,
+        uiState: UiState
+    ) {
         val allBreedImageFlow = flowOf(images)
 
         val favoriteImagesUris =
@@ -67,7 +71,7 @@ class BreedImagesViewModel(private val breedName: String, private val repo: Repo
             }
             .collect {
                 _screenState.update { state ->
-                    state.copy(breedImages = it)
+                    state.copy(breedImages = it, loadingStatus = uiState)
                 }
             }
     }

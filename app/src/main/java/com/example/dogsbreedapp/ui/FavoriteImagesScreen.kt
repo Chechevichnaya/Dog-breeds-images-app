@@ -1,7 +1,6 @@
 package com.example.dogsbreedapp.ui
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,7 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.dogsbreedapp.R
 import com.example.dogsbreedapp.data.model.DogImage
+import com.example.dogsbreedapp.ui.model.FavoriteImagesScreenState
 import com.example.dogsbreedapp.ui.viewModels.FavoriteImagesViewModel
+import com.example.dogsbreedapp.ui.viewModels.UiState
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -35,18 +36,35 @@ fun FavoriteImagesScreen(
     Scaffold(
         topBar = {
             TopBarAppWithImages(
-                screenTitle = stringResource(id = R.string.favorite))
-        }) { _ ->
-        if (screenState.favoriteImages.isEmpty()) {
-            NoPhoto(text = stringResource(R.string.no_favorite_photos))
+                screenTitle = stringResource(id = R.string.favorite)
+            )
+        }) {
+        when (screenState.loadingStatus) {
+            is UiState.Loading -> LoadingScreen(modifier = modifier)
+            is UiState.Success -> ResultScreen(
+                screenState = screenState,
+                viewModelFavorite = viewModelFavorite,
+                onImageClicked = onImageClicked
+            )
+            is UiState.Error -> ErrorScreen(modifier = modifier)
         }
-
-        PhotosGridScreenFavoriteImages(
-            photos = screenState.favoriteImages,
-            onClickDeleteButton = { image -> viewModelFavorite.deleteImageFromDB(image) },
-            onImageClicked = { onImageClicked(viewModelFavorite.getBreedOfDog(it)) }
-        )
     }
+}
+
+@Composable
+private fun ResultScreen(
+    screenState: FavoriteImagesScreenState,
+    viewModelFavorite: FavoriteImagesViewModel,
+    onImageClicked: (String) -> Unit
+) {
+    if (screenState.favoriteImages.isEmpty()) {
+        NoPhoto(text = stringResource(R.string.no_favorite_photos))
+    }
+    PhotosGridScreenFavoriteImages(
+        photos = screenState.favoriteImages,
+        onClickDeleteButton = { image -> viewModelFavorite.deleteImageFromDB(image) },
+        onImageClicked = { onImageClicked(viewModelFavorite.getBreedOfDog(it)) }
+    )
 }
 
 @Composable

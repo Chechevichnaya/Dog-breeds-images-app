@@ -1,7 +1,6 @@
 package com.example.dogsbreedapp.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,16 +10,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.dogsbreedapp.R
 import com.example.dogsbreedapp.data.model.Breed
+import com.example.dogsbreedapp.data.model.SearchWidgetState
 import com.example.dogsbreedapp.ui.viewModels.AllBreedsViewModel
 import com.example.dogsbreedapp.ui.viewModels.UiState
-import com.example.dogsbreedapp.data.model.SearchWidgetState
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -45,17 +42,13 @@ fun AllBreedsScreen(
                     viewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSE)
                     viewModel.returnAllBreedsButtons()
                 },
-                onSearchClickedInOpenState = { searchingRequest ->
-
-
-                },
                 onSearchClickedInCloseState = {
                     viewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPEN)
                 },
                 searchWidgetVisibility = allBreedsScreenState.searchWidgetVisibility
             )
         }
-    ) { padding ->
+    ) {
         when (allBreedsScreenState.loadingStatus) {
             is UiState.Loading -> LoadingScreen(modifier)
             is UiState.Success -> ResultScreen(
@@ -66,36 +59,6 @@ fun AllBreedsScreen(
                 onClickBreedButton = onClickBreedButton
             )
             is UiState.Error -> ErrorScreen(modifier)
-        }
-    }
-}
-
-@Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
-    ) {
-        Image(
-            modifier = Modifier.size(200.dp),
-            painter = painterResource(R.drawable.loading),
-            contentDescription = stringResource(R.string.loading)
-        )
-    }
-}
-
-@Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.fillMaxSize()
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(painter = painterResource(id = R.drawable.close), contentDescription = null)
-            Spacer(modifier = modifier.padding(8.dp))
-            Text(stringResource(R.string.loading_failed))
         }
     }
 }
